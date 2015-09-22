@@ -1,0 +1,52 @@
+Manual testing of the can4python library
+----------------------------------------
+Test parsing speed of the can4python library. You can test three aspects:
+ * Parsing time per frame
+ * Are any frames lost?
+ * Processor load (use a large number of frames to receive in the test script).
+
+It is recommended to run this test on virtual and real CAN hardware for comparison,
+and on Beaglebone and on desktop Linux for comparison.
+
+
+Use a command line argument to specify the CAN .KCD file, and another if overriding the default CAN interface name.
+
+In the directory can4python/tests/manual_tests run:
+
+    ./manual_test_can4python_parsingspeed.py parsingspeed.kcd 
+
+
+Recommended input CAN data
+--------------------------
+Test with generated CAN data (approx 90 % busload at 500 kbit/s):
+  cangen vcan0 -I 007 -L 8 -D i -g 0.14
+
+Send a fixed number of CAN frames with a specific ID, at very high speed:
+   cangen vcan0 -I 007 -L 8 -D i -n 10001 -g 0.01 
+
+Verify input:
+   candump vcan0
+
+
+Parsing time per frame
+----------------------
+Run this script with very high dataspeed from vcan cangen.
+
+See the resulting time per parsed frame (in the printed output).
+Typically 0.2-0.3 ms/frame in desktop Virtualbox using vcan0.
+
+Cangen can not send_frame faster than this, as the cangen process terminates pretty much when the reading all the frame is done by can4python.
+
+
+Are there any lost frames?
+--------------------------
+Send 10001 frames, and make sure that can4python not complains about timeout (not enough frames available). That would be an indication of missing frames.
+
+
+Measuring processor load
+------------------------
+For the processor load, use an unlimited number of frames from cangen.
+Set a large number of frames to receive in the test script.
+The command 'top' is used to find the processor load per process.
+
+

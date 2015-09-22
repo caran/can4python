@@ -1,0 +1,30 @@
+<?xml version="1.0" ?>
+<NetworkDefinition xmlns="http://kayak.2codeornot2code.org/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="Definition.xsd">
+  <Document/>
+  <Bus name="Mainbus">
+    <Message id="0x001" name="testframedef1">
+      <Producer>
+        <NodeRef id="17"/>
+      </Producer>
+      <Signal name="testsignal11" offset="56" />
+      <Signal length="16" name="testsignal12" offset="8">
+        <Notes>Test signal number 2</Notes>
+        <Value slope="1" unit="m/s" min="0" max="100"/>
+      </Signal>
+      <Signal length="16" name="testsignal13" offset="24">
+        <Value type="unsigned"/>
+      </Signal>
+      <Signal length="2" name="testsignal14" offset="40" endianess="big">
+        <Notes>Test signal number 4</Notes>
+        <Value slope="2" unit="m/s" min="21" max="25" type="unsigned" intercept="20"/>
+      </Signal>
+    </Message>
+    <Message id="0x12345678" name="testframedef2" format="extended" length="4" interval="50">
+        <Producer>
+          <NodeRef id="1"/>
+          <NodeRef id="3"/>
+      </Producer>
+      <Signal name="testsignal21" offset="5" />
+    </Message>
+  </Bus>
+</NetworkDefinition>

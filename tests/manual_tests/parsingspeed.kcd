@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<NetworkDefinition xmlns="http://kayak.2codeornot2code.org/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="Definition.xsd">
+  <Document/>
+  <Bus name="Mainbus">
+    <Message id="0x007" length="8" name="testmessage">
+      <Signal name="testsignal1" offset="56"/>
+      <Signal endianess="little" length="16" name="testsignal2" offset="0"/>
+      <Signal length="16" name="testsignal3" offset="24"/>
+      <Signal endianess="big" length="4" name="testsignal4" offset="59">
+        <Value type="signed"/>
+      </Signal>
+    </Message>
+  </Bus>
+</NetworkDefinition>
