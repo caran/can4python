@@ -14,7 +14,11 @@ Use some online XML schema validator service to make sure the imported and expor
 
 TODO
 ----
-* Hosting documentation on suitable server
-* Linking from PyPI
-* Handle Labels (Enums) in KCD files.
+* Handle Labels (Enums, name constants) in KCD files. For example: PowerMode='EngineRunning'
 * More usage examples, also with BCM.
+* Implement a get_configuration() function.
+* Implement myconfiguration.get_all_signalnames()
+* Verify that the 'from . import whatever' pattern is OK.
+* Abstract BCM more from CanBus.
+* Describe byte order (BIG and LITTLE ENDIAN) better, and bit order. Byte-order, it is a property of the signal or the frame.
+
