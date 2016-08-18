@@ -57,7 +57,7 @@ class FilehandlerKcd():
     """
 
     @staticmethod
-    def read(filename, busname):
+    def read(filename, busname=None):
         """Read configuration file in KCD format.
 
         Args:
