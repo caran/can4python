@@ -162,16 +162,17 @@ class TestCanFrameDefinition(unittest.TestCase):
         result = self.frame_def.__repr__(long_text=False)
         print(result)  # Check the output manually
 
-        known_result = "CAN frame definition. ID=1 (0x001, standard) testframedef, DLC=8, " + \
-                       "cycletime None ms, producers: 9, contains 1 signals"
+        known_result = "CAN frame definition. ID=1 (0x001, standard) 'testframedef', DLC=8, " + \
+                       "cycletime None ms, producers: ['9'], no throttling, contains 1 signals"
         self.assertEqual(result.strip(), known_result.strip())
 
 
     def testReprNoSignals(self):
         fr_def = canframe_definition.CanFrameDefinition(1, 'testframedef')
         result = repr(fr_def)
-        known_result = "CAN frame definition. ID=1 (0x001, standard) testframedef, DLC=8, " + \
-                       "cycletime None ms, contains 0 signals"
+        
+        known_result = "CAN frame definition. ID=1 (0x001, standard) 'testframedef', DLC=8, " + \
+                       "cycletime None ms, producers: [], no throttling, contains 0 signals"
         self.assertEqual(result.strip(), known_result.strip())
 
 

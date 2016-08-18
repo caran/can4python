@@ -66,10 +66,13 @@ class CanFrameDefinition():
 
     def __repr__(self, long_text=True):
 
-        output = "CAN frame definition. ID={0} (0x{0:03X}, {1}) {2}, DLC={3}, cycletime {4} ms".format(
+        output = "CAN frame definition. ID={0} (0x{0:03X}, {1}) '{2}', DLC={3}, cycletime {4} ms".format(
             self.frame_id, self.frame_format, self.name, self.dlc, self.cycletime, )
-        if self.producer_ids:
-            output += ", producers: {}".format(" ".join(self.producer_ids))
+        output += ", producers: {!r}".format(list(self.producer_ids))
+        if self.throttle_time is None:
+            output += ", no throttling"
+        else:             
+            output += ", throttling {:.0f} ms".format(self.throttle_time)
         output += ", contains {} signals".format(len(self.signaldefinitions))
         if long_text and self.signaldefinitions:
             output += ":"
