@@ -14,6 +14,7 @@ Notes:
 
 
 """
+import contextlib
 import copy
 import os.path
 import subprocess
@@ -75,6 +76,14 @@ class TestCanBus(unittest.TestCase):
             self.simulated_can_process.terminate()
         except (AttributeError, ProcessLookupError) as _:
             pass
+
+        for filename in [self.OUTPUT_FILENAME_4,
+                         self.OUTPUT_FILENAME_5,
+                         self.OUTPUT_FILENAME_6,
+                         self.OUTPUT_FILENAME_7]:
+            with contextlib.suppress(FileNotFoundError):
+                os.remove(filename)
+
 
     # Constructor #
 

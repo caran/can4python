@@ -8,6 +8,7 @@ test_filehandler_kcd
 Tests for `filehandler_kcd` module.
 """
 
+import contextlib
 import copy
 import os
 import sys
@@ -40,6 +41,14 @@ class TestConfiguration(unittest.TestCase):
         parent_directory = os.path.dirname(__file__)
         self.input_filename = os.path.join(parent_directory, INPUT_FILENAME)
         self.input_filename_no_busdefinition = os.path.join(parent_directory, INPUT_FILENAME_NO_BUSDEFINITION)
+
+    def tearDown(self):
+        for filename in [self.OUTPUT_FILENAME_1,
+                         self.OUTPUT_FILENAME_2,
+                         self.OUTPUT_FILENAME_3,
+                         self.OUTPUT_FILENAME_10]:
+            with contextlib.suppress(FileNotFoundError):
+                os.remove(filename)
 
     def testReadKcdFile(self):
         config = filehandler_kcd.FilehandlerKcd.read(self.input_filename, "Mainbus")
@@ -139,10 +148,8 @@ class TestConfiguration(unittest.TestCase):
         self.assertEqual(config.busname, "Mainbus")
 
     def testWriteKcdFile(self):
-        try:
+        with contextlib.suppress(FileNotFoundError):
             os.remove(self.OUTPUT_FILENAME_1)
-        except FileNotFoundError:
-            pass
 
         filehandler_kcd.FilehandlerKcd.write(self.config, self.OUTPUT_FILENAME_1)
         self.assertTrue(os.path.exists(self.OUTPUT_FILENAME_1))
@@ -150,10 +157,8 @@ class TestConfiguration(unittest.TestCase):
         # TODO: Verify result in more detail
 
     def testSaveLoadedConfigurationToFile(self):
-        try:
+        with contextlib.suppress(FileNotFoundError):
             os.remove(self.OUTPUT_FILENAME_2)
-        except FileNotFoundError:
-            pass
 
         config = filehandler_kcd.FilehandlerKcd.read(self.input_filename, None)
         self.assertEqual(config.busname, "Mainbus")
@@ -163,10 +168,8 @@ class TestConfiguration(unittest.TestCase):
         # TODO: Check manually that the input and output files are similar
 
     def testWriteKcdFileNoBusnameGiven(self):
-        try:
+        with contextlib.suppress(FileNotFoundError):
             os.remove(self.OUTPUT_FILENAME_3)
-        except FileNotFoundError:
-            pass
 
         config = configuration.Configuration()
         self.assertEqual(config.busname, None)
@@ -176,10 +179,8 @@ class TestConfiguration(unittest.TestCase):
             self.assertTrue(any("Mainbus" in line for line in file.readlines()))
 
     def testWriteKcdFileNoProducerGiven(self):
-        try:
+        with contextlib.suppress(FileNotFoundError):
             os.remove(self.OUTPUT_FILENAME_10)
-        except FileNotFoundError:
-            pass
 
         config = configuration.Configuration()
         fr_def = canframe_definition.CanFrameDefinition(1, 'testframedef10')
