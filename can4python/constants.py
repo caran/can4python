@@ -59,7 +59,7 @@ CAN_MASK_ID_ONLY = 0x1FFFFFFF
 # SocketCAN kernel communication formats
 FORMAT_CAN_RAWFRAME = "=IB3x8s"  # CAN ID (4 bytes), DLC (1 byte), 3 pad bytes, 8 data bytes
 SIZE_CAN_RAWFRAME = struct.calcsize(FORMAT_CAN_RAWFRAME)  # 16 bytes
-FORMAT_BCM_HEADER = "@IIIllllII" # interval seconds and useconds are 'long', others are 'uint32'.
+FORMAT_BCM_HEADER = "@3I4l2I0q" # interval seconds and useconds are platform dependent, others are 'uint32'. Pad bytes are required.
 SIZE_BCM_HEADER = struct.calcsize(FORMAT_BCM_HEADER)  # 56 bytes
 
 # KCD file details
