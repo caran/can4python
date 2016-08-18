@@ -19,7 +19,7 @@ Each of the CAN frames contains a number of signals. In order to specify a signa
 * bit numbering scheme
 * endianness: little endian or big endian
 
-
+For more details, see :class:`.CanSignalDefinition`.
 
 Minimal example
 ---------------
@@ -37,7 +37,9 @@ dictionary with the signal values (*numerical*), having the signal names (*str*)
 If a timeout is defined and no frame is received, a :exc:`.CanTimeoutException` is raised.
 
 As our script will send out frames from the node "1", it will consider frame ID 7 as an outgoing frame. That is
-seen in the corresponding KCD file::
+seen in the corresponding KCD file:
+
+.. code-block:: xml
 
     <?xml version="1.0" ?>
     <NetworkDefinition xmlns="http://kayak.2codeornot2code.org/1.0"
@@ -209,20 +211,45 @@ Configurations made in source code using can4python can be written to a KCD file
     mycanbus.write_configuration('outputfile.kcd')
 
 
+Show filtering of incoming frames
+---------------------------------
+
+To see the CAN frame receive filters (for RAW interface) that are applied (in Ubuntu)::
+
+    cat /proc/net/can/rcv*
+
+See also :meth:`.SocketCanRawInterface.set_receive_filters`
+
+
+Running tests
+-------------
+In order ro run the tests:
+
+.. code-block:: bash
+
+    sudo make test
+
+The tests are possible to run on a desktop Linux PC, as well as embedded Linux hardware.
+
+
 Virtual (simulated) CAN interfaces for testing
 ----------------------------------------------
 The can4python library uses socketCAN type of CAN interface, for use under Linux. The CAN interfaces
 are typically named 'can0', 'can1' etc. It is also possible to setup virtual (simulated) CAN interfaces
 for testing purposes, and they act as loopback interfaces.
 
-To enable the 'vcan0' virtual CAN interface on your desktop Ubuntu Linux machine::
+To enable the 'vcan0' virtual CAN interface on your desktop Ubuntu Linux machine:
+
+.. code-block:: bash
 
     sudo modprobe vcan
     sudo ip link add dev vcan0 type vcan
     sudo ip link set up vcan0
 
 
-To see what is sent on the virtual CAN interface, use the 'candump' tool::
+To see what is sent on the virtual CAN interface, use the 'candump' tool:
+
+.. code-block:: bash
 
     candump vcan0
 

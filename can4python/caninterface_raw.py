@@ -109,8 +109,8 @@ class SocketCanRawInterface():
 
         To see the filters that are applied (in Ubuntu)::
 
-          cat /proc/net/can/rcvlist_fil
-
+          cat /proc/net/can/rcv*
+          
         """
         # The filterinfo is packed in a struct:
         # filter1_id, filter1_mask, filter2_id, filter2_mask, etc where each is an interger ('I')

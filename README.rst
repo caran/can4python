@@ -59,6 +59,27 @@ Known limitations
 * It is assumed that each CAN signal name only is available in a single CAN frame ID.
 
 
+Dependencies
+------------
+The can4python package itself has no dependencies, except for Python 3.3+ running on Linux.
+
+For tests, a virtual CAN interface ('vcan') must be installed. It is part of the Linux kernel. See the Usage page of this documentation for details.
+
+Dependencies for testing and documentation:
+
+===================== ================================= ======================= ==============================
+Dependency            Description                       License                 Debian/pip package
+===================== ================================= ======================= ==============================
+vcan0                 Virtual CAN bus interface         Part of Linux kernel    
+coverage              Test coverage measurement         Apache 2.0              P: coverage
+texlive               Latex library (for PDF creation)  "Knuth"                 D: texlive-full
+Sphinx 1.3+           Documentation tool                BSD 2-cl                P: sphinx
+Sphinx rtd theme      Theme for Sphinx                  MIT                     P: sphinx_rtd_theme
+===================== ================================= ======================= ==============================
+
+
+
+
 Installation and usage
 ----------------------
 See separate documentation pages.

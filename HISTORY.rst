@@ -4,6 +4,12 @@
 History
 =======
 
+0.2.0 (2016-?-?)
+---------------------
+
+* Improved documentation
+* Better support for other architectures
+
 
 0.1.1 (2015-11-16)
 ---------------------
