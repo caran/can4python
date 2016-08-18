@@ -171,20 +171,6 @@ class CanFrame():
                                                           signaldefinition.numberofbits,
                                                           signaldefinition.startbit)
 
-            # --------------------
-            #extract_shifts = utilities.calculate_backward_bitnumber(signaldefinition.startbit)
-            #dataint = utilities.can_bytes_to_int(self.frame_data)
-
-            #if signaldefinition.endianness == constants.LITTLE_ENDIAN:
-            #    dataint = utilities.endianness_converter(dataint, signaldefinition.startbit, signaldefinition.numberofbits,
-                                                         #from_endianness=constants.LITTLE_ENDIAN)
-
-            # Extract the signal from the frame
-           # shifted = dataint >> extract_shifts  # Rightshift so the interesting bits are rightmost
-            #mask = (1 << signaldefinition.numberofbits) - 1  # Mask with ones in 'numberofbits' positions
-            #bus_value = shifted & mask
-            # --------------------
-
             # Unpack from signal type
             if signaldefinition.signaltype == constants.CAN_SIGNALTYPE_UNSIGNED:
                 unpacked_value = bus_value
@@ -333,5 +319,3 @@ class CanFrame():
         text = "{!r} \n".format(self)
         text += utilities.generate_can_integer_overview(utilities.can_bytes_to_int(self.frame_data))
         return text
-
-
