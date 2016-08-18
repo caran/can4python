@@ -5,6 +5,9 @@ Introduction to can4python
 A package for handling CAN bus (Controller Area Network) signals on Linux SocketCAN, for Python 3.3 and later.
 
 * Free software: BSD license
+
+Web resources
+-------------
 * Source code on GitHub: https://github.com/caran/can4python
 * Documentation: https://can4python.readthedocs.org.
 * Python Package Index (PyPI): https://pypi.python.org/pypi/can4python
@@ -59,4 +62,3 @@ Known limitations
 Installation and usage
 ----------------------
 See separate documentation pages.
-

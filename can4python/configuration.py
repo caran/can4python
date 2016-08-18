@@ -70,7 +70,7 @@ class Configuration():
             self.busname, len(self.framedefinitions), " ".join(sorted(self.ego_node_ids)))
 
     def get_descriptive_ascii_art(self):
-        """Display an overview of the :class:`.Configuration` object with frame definitions and signals.s
+        """Display an overview of the :class:`.Configuration` object with frame definitions and signals.
 
         Returns:
           A multi-line string.
