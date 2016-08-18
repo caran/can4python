@@ -147,7 +147,8 @@ class FilehandlerKcd():
 
                 signalcomment = ""
                 for notes in signal.findall('kayak:Notes', constants.KCD_XML_NAMESPACE):
-                    signalcomment += notes.text
+                    if notes.text is not None:
+                        signalcomment += notes.text
 
                 s = cansignal.CanSignalDefinition(signalname, startbit, numberofbits, scalingfactor, valueoffset,
                                                   unit=unit, comment=signalcomment,
