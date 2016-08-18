@@ -56,6 +56,8 @@ class CanBus():
 
     """
     def __init__(self, config, interfacename, timeout=None, use_bcm=False):
+
+        # Read-only properties
         self._configuration = config
         self._use_bcm = use_bcm
 
@@ -126,6 +128,16 @@ class CanBus():
         return "CAN bus '{}' on CAN interface: {}, having {} frameIDs defined. Protocol {}".format(
             self._configuration.busname, self.caninterface._interfacename,
             len(self._configuration.framedefinitions), protocol_string)
+
+    @property
+    def config(self):
+        """Get the configuration (read-only). The configuration is set in the constructor."""
+        return self._configuration
+
+    @property
+    def use_bcm(self):
+        """Return True if BCM is used (read-only). Is set in the constructor."""
+        return self._use_bcm
 
     def init_reception(self):
         """Setup the CAN frame reception.
@@ -292,13 +304,6 @@ class CanBus():
         text = repr(self) + "\n"
         text += "    " + self._configuration.get_descriptive_ascii_art()
         return text   
-
-    # def get_all_signalnames(self):
-    # # Input or output? Why?
-    #     """Return a sorted list of all defined signal names (*list of str*)."""
-    #     print("#***#")
-    #     print(self._output_signaldefinition_storage)
-    #     return sorted(self._output_signaldefinition_storage.keys())
                 
     def write_configuration(self, filename):
         """Write configuration to file.

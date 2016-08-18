@@ -68,6 +68,11 @@ class SocketCanRawInterface():
     def __repr__(self):
         return "SocketCan raw interface: {}".format(self._interfacename)
 
+    @property
+    def interfacename(self):
+        """Get the interface name (read-only). The interface name is set in the constructor."""
+        return self._interfacename
+
     def close(self):
         """Close the socket"""
         self._socket.close()

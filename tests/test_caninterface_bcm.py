@@ -68,20 +68,20 @@ class TestSocketCanBcmInterface(unittest.TestCase):
 
     def testConstructor(self):
         a = caninterface_bcm.SocketCanBcmInterface(VIRTUAL_CAN_BUS_NAME, timeout=1.0)
-        self.assertEqual(a._interfacename, VIRTUAL_CAN_BUS_NAME)
+        self.assertEqual(a.interfacename, VIRTUAL_CAN_BUS_NAME)
         a.close()
-        self.assertEqual(a._interfacename, VIRTUAL_CAN_BUS_NAME)
+        self.assertEqual(a.interfacename, VIRTUAL_CAN_BUS_NAME)
         
         b = caninterface_bcm.SocketCanBcmInterface(VIRTUAL_CAN_BUS_NAME, timeout=1.0)
-        self.assertEqual(b._interfacename, VIRTUAL_CAN_BUS_NAME)
+        self.assertEqual(b.interfacename, VIRTUAL_CAN_BUS_NAME)
         b.close()
         
         c = caninterface_bcm.SocketCanBcmInterface(VIRTUAL_CAN_BUS_NAME, timeout=1.0)
-        self.assertEqual(c._interfacename, VIRTUAL_CAN_BUS_NAME)
+        self.assertEqual(c.interfacename, VIRTUAL_CAN_BUS_NAME)
         c.close()
         
         d = caninterface_bcm.SocketCanBcmInterface(VIRTUAL_CAN_BUS_NAME, timeout=1.0)
-        self.assertEqual(d._interfacename, VIRTUAL_CAN_BUS_NAME)
+        self.assertEqual(d.interfacename, VIRTUAL_CAN_BUS_NAME)
         d.close()
 
     def testConstructorWrongValue(self):
@@ -93,13 +93,13 @@ class TestSocketCanBcmInterface(unittest.TestCase):
 
     def testConstructorSeveralInterfaces(self):
         a = caninterface_bcm.SocketCanBcmInterface(VIRTUAL_CAN_BUS_NAME, timeout=1.0)
-        self.assertEqual(a._interfacename, VIRTUAL_CAN_BUS_NAME)
+        self.assertEqual(a.interfacename, VIRTUAL_CAN_BUS_NAME)
         
         b = caninterface_bcm.SocketCanBcmInterface(VIRTUAL_CAN_BUS_NAME, timeout=1.0)
-        self.assertEqual(b._interfacename, VIRTUAL_CAN_BUS_NAME)
+        self.assertEqual(b.interfacename, VIRTUAL_CAN_BUS_NAME)
         
         c = caninterface_bcm.SocketCanBcmInterface(VIRTUAL_CAN_BUS_NAME, timeout=1.0)
-        self.assertEqual(c._interfacename, VIRTUAL_CAN_BUS_NAME)
+        self.assertEqual(c.interfacename, VIRTUAL_CAN_BUS_NAME)
         
         a.close()
         b.close()
@@ -110,6 +110,9 @@ class TestSocketCanBcmInterface(unittest.TestCase):
                           caninterface_bcm.SocketCanBcmInterface,
                           self.NONEXISTING_CAN_BUS_NAME, timeout=1.0)
         self.assertRaises(exceptions.CanException, caninterface_bcm.SocketCanBcmInterface, 1, 1.0)
+
+    def testWriteToInterfacenameAttribute(self):
+        self.assertRaises(AttributeError, setattr, self.interface, 'interfacename', 'can0')
 
     def testRepr(self):
         result = repr(self.interface)

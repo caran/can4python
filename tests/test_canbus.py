@@ -87,39 +87,57 @@ class TestCanBus(unittest.TestCase):
 
     # Constructor #
 
+    def testUseBcmAttribute(self):
+        self.assertFalse(self.canbus_raw.use_bcm)
+        self.assertTrue(self.canbus_bcm.use_bcm)
+
+    def testWriteToBcmAttribute(self):
+        self.assertRaises(AttributeError, setattr, self.canbus_raw, 'use_bcm', True)
+        self.assertRaises(AttributeError, setattr, self.canbus_raw, 'use_bcm', False)
+        self.assertRaises(AttributeError, setattr, self.canbus_bcm, 'use_bcm', True)
+        self.assertRaises(AttributeError, setattr, self.canbus_bcm, 'use_bcm', False)
+
+    def testWriteToConfigAttribute(self):
+        self.assertRaises(AttributeError, setattr, self.canbus_raw, 'config', configuration.Configuration())
+        self.assertRaises(AttributeError, setattr, self.canbus_bcm, 'config', configuration.Configuration())
+
     def testConstructor(self):
         self.canbus_raw.caninterface.close()
 
         config = configuration.Configuration()
         a = canbus.CanBus(config, VIRTUAL_CAN_BUS_NAME, timeout=1.0)
-        self.assertEqual(a.caninterface._interfacename, VIRTUAL_CAN_BUS_NAME)
+        self.assertEqual(a.caninterface.interfacename, VIRTUAL_CAN_BUS_NAME)
         a.caninterface.close()
-        self.assertEqual(a.caninterface._interfacename, VIRTUAL_CAN_BUS_NAME)
+        self.assertEqual(a.caninterface.interfacename, VIRTUAL_CAN_BUS_NAME)
+        self.assertFalse(a.use_bcm)
 
         b = canbus.CanBus(config, VIRTUAL_CAN_BUS_NAME, timeout=1.0)
-        self.assertEqual(b.caninterface._interfacename, VIRTUAL_CAN_BUS_NAME)
+        self.assertEqual(b.caninterface.interfacename, VIRTUAL_CAN_BUS_NAME)
+        self.assertFalse(a.use_bcm)
         b.caninterface.close()
-        self.assertEqual(b.caninterface._interfacename, VIRTUAL_CAN_BUS_NAME)
+        self.assertEqual(b.caninterface.interfacename, VIRTUAL_CAN_BUS_NAME)
 
         c = canbus.CanBus(config, VIRTUAL_CAN_BUS_NAME, timeout=1.0, use_bcm=True)
-        self.assertEqual(c.caninterface._interfacename, VIRTUAL_CAN_BUS_NAME)
+        self.assertEqual(c.caninterface.interfacename, VIRTUAL_CAN_BUS_NAME)
+        self.assertFalse(a.use_bcm)
         c.caninterface.close()
-        self.assertEqual(c.caninterface._interfacename, VIRTUAL_CAN_BUS_NAME)
+        self.assertEqual(c.caninterface.interfacename, VIRTUAL_CAN_BUS_NAME)
 
     def testReadConfigFromFile(self):
         """See test_configuration.py and others for more complete configuration read testing"""
         bus = canbus.CanBus.from_kcd_file(self.input_filename, VIRTUAL_CAN_BUS_NAME)
+        self.assertFalse(bus.use_bcm)
 
-        self.assertEqual(bus.caninterface._interfacename, VIRTUAL_CAN_BUS_NAME)
-        self.assertEqual(bus._configuration.busname, "Mainbus")
+        self.assertEqual(bus.caninterface.interfacename, VIRTUAL_CAN_BUS_NAME)
+        self.assertEqual(bus.config.busname, "Mainbus")
 
-        self.assertEqual(bus._configuration.framedefinitions[1].frame_id, 1)
-        self.assertEqual(bus._configuration.framedefinitions[1].frame_id, 1)
-        self.assertEqual(bus._configuration.framedefinitions[1].name, 'testframedef1')
+        self.assertEqual(bus.config.framedefinitions[1].frame_id, 1)
+        self.assertEqual(bus.config.framedefinitions[1].frame_id, 1)
+        self.assertEqual(bus.config.framedefinitions[1].name, 'testframedef1')
 
         bus2 = canbus.CanBus.from_kcd_file(self.input_filename, VIRTUAL_CAN_BUS_NAME, use_bcm=True)
-        self.assertEqual(bus2.caninterface._interfacename, VIRTUAL_CAN_BUS_NAME)
-        self.assertEqual(bus2._configuration.busname, "Mainbus")
+        self.assertEqual(bus2.caninterface.interfacename, VIRTUAL_CAN_BUS_NAME)
+        self.assertEqual(bus2.config.busname, "Mainbus")
 
     def testRepr(self):
         result = repr(self.canbus_raw)
@@ -131,13 +149,6 @@ class TestCanBus(unittest.TestCase):
         result = self.canbus_raw.get_descriptive_ascii_art()
         print('\n\n' + result)  # Check the output manually
 
-    # def testGetAllSignalNames(self):
-    #     # Input or output? Why?
-    #     return
-    #     result = self.canbus_raw.get_all_signalnames()
-    #     self.assertIn('testsignal1', result)
-    #     self.assertIn('testsignal2', result)
-    #     self.assertIn('testsignal3', result)
 
     # Send signals #
 
