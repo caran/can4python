@@ -49,8 +49,9 @@ class TestCanBus(unittest.TestCase):
 
     # Scaffolding #
 
-    NUMBER_OF_LOOPS = 10000
-    FRAME_SENDER_SPACING_MILLISECONDS = 0.14  # Approx 90 % busload at 500 kbit/s
+    NUMBER_OF_LOOPS = 1000
+    #FRAME_SENDER_SPACING_MILLISECONDS = 0.14  # Approx 90 % busload at 500 kbit/s  Beaglebone is too slow for this
+    FRAME_SENDER_SPACING_MILLISECONDS = 1
     FRAME_NUMBER_OF_DATABYTES = 8
 
     OUTPUT_FILENAME_4 = "test_out_4_TEMPORARY.kcd"
@@ -544,5 +545,5 @@ if __name__ == '__main__':
 
             # Run a single test #
     # suite = unittest.TestSuite()
-    # suite.addTest(TestCanBus("testReceiveNoData"))
+    # suite.addTest(TestCanBus("testReceiveAllSentFramesRaw"))
     # unittest.TextTestRunner(verbosity=2).run(suite)
