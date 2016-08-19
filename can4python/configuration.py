@@ -59,6 +59,8 @@ class Configuration():
 
         if value is None:
             self._ego_node_ids = set()
+        elif isinstance(value, str):
+            raise exceptions.CanException("ego_node_ids should be a list/set of strings. Given: {!r}".format(value))
         else:
             try:
                 self._ego_node_ids = set(map(str, value))

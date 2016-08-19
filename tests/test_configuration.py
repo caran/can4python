@@ -91,6 +91,7 @@ class TestConfiguration(unittest.TestCase):
 
     def testPropertiesWrongValues(self):
         self.assertRaises(exceptions.CanException, setattr, self.config, 'ego_node_ids', 3)
+        self.assertRaises(exceptions.CanException, setattr, self.config, 'ego_node_ids', "3")
 
     def testSetThrottleTimes(self):
         self.assertEqual(self.config.framedefinitions[FRAME_ID_SEND].throttle_time, None)
