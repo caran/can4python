@@ -143,7 +143,7 @@ class TestSocketCanBcmInterface(unittest.TestCase):
         self.start_can_frame_sender()
         self.interface.setup_reception(self.FRAME_ID_RECEIVE)
         received_frame = self.interface.recv_next_frame()
-        self.assertEqual(len(received_frame.frame_data), self.FRAME_NUMBER_OF_DATABYTES)
+        self.assertEqual(len(received_frame), self.FRAME_NUMBER_OF_DATABYTES)
 
     def testReceiveStoppedReception(self):
         self.start_can_frame_sender()
@@ -173,10 +173,10 @@ class TestSocketCanBcmInterface(unittest.TestCase):
         print(outputstring)
 
     def testReceiveSpeedThrottled(self):
-        THROTTLE_INTERVAL_MILLISECONDS = 20  # seconds
+        THROTTLE_INTERVAL_MILLISECONDS = 20  
         THROTTLE_LOOPS = 100
         ALLOWED_RELATIVE_ERROR = 0.1
-        nominal_time = THROTTLE_INTERVAL_MILLISECONDS * THROTTLE_LOOPS / 1000
+        nominal_time = THROTTLE_INTERVAL_MILLISECONDS * THROTTLE_LOOPS / 1000  # seconds
 
         self.start_can_frame_sender()
         self.interface.setup_reception(self.FRAME_ID_RECEIVE, min_interval=THROTTLE_INTERVAL_MILLISECONDS)
@@ -189,11 +189,12 @@ class TestSocketCanBcmInterface(unittest.TestCase):
         self.assertLess(abs(execution_time - nominal_time), ALLOWED_RELATIVE_ERROR * nominal_time)
 
     def testReceiveDataChanged(self):
+        """Verify that data change filtering works, by measuring time to receive a small number of frames from a larger data flow."""
         SENDER_INTERVAL_MILLISECONDS = 1
         DATA_CHANGED_LOOPS = 20
         DATA_MASK = b"\x80\x00\x00\x00\x00\x00\x00\x00"  # One frame out of 128
-        ALLOWED_RELATIVE_ERROR = 0.4
-        nominal_time = SENDER_INTERVAL_MILLISECONDS * DATA_CHANGED_LOOPS * 128 / 1000
+        ALLOWED_RELATIVE_ERROR = 2.0
+        nominal_time = SENDER_INTERVAL_MILLISECONDS * 128 * DATA_CHANGED_LOOPS / 1000  # seconds
 
         self.start_can_frame_sender(SENDER_INTERVAL_MILLISECONDS)
         self.interface.setup_reception(self.FRAME_ID_RECEIVE, data_mask=DATA_MASK)
@@ -203,13 +204,20 @@ class TestSocketCanBcmInterface(unittest.TestCase):
         for i in range(DATA_CHANGED_LOOPS):
             self.interface.recv_next_frame()
         execution_time = time.time() - starttime
-        self.assertLess(abs(execution_time - nominal_time), ALLOWED_RELATIVE_ERROR * nominal_time)
+        
+        allowed_error = ALLOWED_RELATIVE_ERROR * nominal_time
+        time_error = abs(execution_time - nominal_time)
+        outputstring = "\n --> Received {} frames in {:.1f} s, nominal time {:.1f} s. Error {:.1f} s (allowed {:.1f} s).\n".\
+            format(DATA_CHANGED_LOOPS, execution_time, nominal_time, time_error, allowed_error)
+        print(outputstring)
+        self.assertLess(time_error, allowed_error)
 
     def testReceiveDataChangedShorterDlcThanMask(self):
+        """Verify that filtering works also when the input frame is shorter (3 bytes) than the data mask (8 bytes)."""
         SENDER_INTERVAL_MILLISECONDS = 1
         DATA_CHANGED_LOOPS = 20
         DATA_MASK = b"\x80\x00\x00\x00\x00\x00\x00\x00"  # One frame out of 128
-        ALLOWED_RELATIVE_ERROR = 0.4
+        ALLOWED_RELATIVE_ERROR = 2.0
         nominal_time = SENDER_INTERVAL_MILLISECONDS * DATA_CHANGED_LOOPS * 128 / 1000
 
         self.interface.setup_reception(self.FRAME_ID_RECEIVE, data_mask=DATA_MASK)
@@ -225,11 +233,18 @@ class TestSocketCanBcmInterface(unittest.TestCase):
         for i in range(DATA_CHANGED_LOOPS):
             self.interface.recv_next_frame()
         execution_time = time.time() - starttime
-        self.assertLess(abs(execution_time - nominal_time), ALLOWED_RELATIVE_ERROR * nominal_time)
+
+        allowed_error = ALLOWED_RELATIVE_ERROR * nominal_time
+        time_error = abs(execution_time - nominal_time)
+        outputstring = "\n --> Received {} frames in {:.1f} s, nominal time {:.1f} s. Error {:.1f} s (allowed {:.1f} s).\n".\
+            format(DATA_CHANGED_LOOPS, execution_time, nominal_time, time_error, allowed_error)
+        print(outputstring)
+        self.assertLess(time_error, allowed_error)
 
     def testReceiveDlcChanged(self):
+        """Verify that we are receiving frames where each frame is longer (or no data) than the previous."""
         SENDER_INTERVAL_MILLISECONDS = 1
-        NUMBER_OF_DLC_FRAMES = 10
+        NUMBER_OF_DLC_FRAMES = 30
         DATA_MASK = b"\x00\x00\x00\x00\x00\x00\x00\x00"  # Do not look at data changes
         self.interface.setup_reception(self.FRAME_ID_RECEIVE, data_mask=DATA_MASK)
         self.simulated_can_process = subprocess.Popen(["cangen", VIRTUAL_CAN_BUS_NAME,
@@ -279,7 +294,6 @@ class TestSocketCanBcmInterface(unittest.TestCase):
 
         known_result = "[8]  00 00 00 00 00 00 00 00"
         self.assertIn(known_result, out)
-
 
     def testSetupPeriodicSendWrongValue(self):
         frame_zeros = canframe.CanFrame(self.FRAME_ID_SEND, b'\x00\x00\x00\x00\x00\x00\x00\x00')
@@ -393,5 +407,5 @@ if __name__ == '__main__':
     
         # Run a single test #
     # suite = unittest.TestSuite()
-    # suite.addTest(TestSocketCanBcmInterface("testSendPeriodicAndChangeFrameAndStopExtended"))
+    # suite.addTest(TestSocketCanBcmInterface("testReceiveDlcChanged"))
     # unittest.TextTestRunner(verbosity=2).run(suite)
