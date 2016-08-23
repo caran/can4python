@@ -272,7 +272,7 @@ class SocketCanBcmInterface():
                 raise exceptions.CanException(template.format(self._interfacename))
             elif e.errno == errno.EINVAL:  # 22 on Linux
                 template = "Could not send CAN BCM message on interface {}. Linux kernel SocketCAN is protesting. " + \
-                           "You are probably referring to a non-existing frame in  (including frame format)."
+                           "You are probably referring to a non-existing frame."
                 raise exceptions.CanNotFoundByKernelException(template.format(self._interfacename))
             raise
 

@@ -166,6 +166,14 @@ class TestCanFrameDefinition(unittest.TestCase):
                        "cycletime None ms, producers: ['9'], no throttling, contains 1 signals"
         self.assertEqual(result.strip(), known_result.strip())
 
+    def testReprThrottling(self):
+        fr_def = canframe_definition.CanFrameDefinition(123)
+        fr_def.throttle_time = 30  # ms
+        result = repr(fr_def)
+        
+        known_result = "CAN frame definition. ID=123 (0x07B, standard) '', DLC=8, " + \
+                       "cycletime None ms, producers: [], throttling 30 ms, contains 0 signals"
+        self.assertEqual(result.strip(), known_result.strip())
 
     def testReprNoSignals(self):
         fr_def = canframe_definition.CanFrameDefinition(1, 'testframedef')
@@ -174,7 +182,6 @@ class TestCanFrameDefinition(unittest.TestCase):
         known_result = "CAN frame definition. ID=1 (0x001, standard) 'testframedef', DLC=8, " + \
                        "cycletime None ms, producers: [], no throttling, contains 0 signals"
         self.assertEqual(result.strip(), known_result.strip())
-
 
     def testGetDescriptiveAsciiArt(self):       
         result = self.frame_def.get_descriptive_ascii_art()

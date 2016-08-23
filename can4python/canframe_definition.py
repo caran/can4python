@@ -65,7 +65,6 @@ class CanFrameDefinition():
 
 
     def __repr__(self, long_text=True):
-
         output = "CAN frame definition. ID={0} (0x{0:03X}, {1}) '{2}', DLC={3}, cycletime {4} ms".format(
             self.frame_id, self.frame_format, self.name, self.dlc, self.cycletime, )
         output += ", producers: {!r}".format(list(self.producer_ids))

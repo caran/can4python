@@ -6,7 +6,9 @@
       <Producer>
         <NodeRef id="17"/>
       </Producer>
-      <Signal name="testsignal11" offset="56" />
+      <Signal name="testsignal11" offset="56">
+        <Notes/>
+      </Signal>
       <Signal length="16" name="testsignal12" offset="8">
         <Notes>Test signal number 2</Notes>
         <Value slope="1" unit="m/s" min="0" max="100"/>
