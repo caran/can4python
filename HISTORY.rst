@@ -7,8 +7,13 @@ History
 0.2.0 (2016-?-?)
 ---------------------
 
-* Improved documentation
-* Better support for other architectures
+* Better support for other architectures. The broadcast manager (BCM) is
+now functional also on 32 bit ARM processors.
+* Implemented the read-only properties config and read_bcm on the canbus objent.
+* Implemented the read-only property interfacename on the caninterface objents.
+* Better checks for invalid settings.
+* Improved repr() for canframe definition.
+* Improved documentation.
 
 
 0.1.1 (2015-11-16)
