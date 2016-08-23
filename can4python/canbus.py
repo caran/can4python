@@ -116,7 +116,7 @@ class CanBus():
           busname (str or None): Which bus name in the messagedefinitions file to use. Defaults
             to :const:`None` (using first alphabetically).
           use_bcm (bool): True if the SocketCan Broadcast manager (BCM) should be used. Defaults to False.
-          ego_node_ids (set of strings) Set of nodes that this program will enact. You can also pass it a list.
+          ego_node_ids (set of strings): Set of nodes that this program will enact. You can also pass it a list.
 
         """
         config = filehandler_kcd.FilehandlerKcd.read(filename, busname)
@@ -256,7 +256,7 @@ class CanBus():
         The default value for the signals are used, until updated via the :meth:`.send_signals` function.
 
         If you do not use this :meth:`.start_sending_all_signals` method, the periodic transmission for each frame
-        will start first :meth:`.send_signals` call.
+        will start at first :meth:`.send_signals` call.
 
         """
         if not self._use_bcm:

@@ -164,13 +164,11 @@ class CanFrameDefinition():
     def producer_ids(self):
         """
         *set of strings* Set of nodes (ECUs) that produce this frame. You can pass it a list (it will convert to a set).
-
         """
         return self._producer_ids
 
     @producer_ids.setter
     def producer_ids(self, value):
-
         if value is None:
             self._producer_ids = set()
         elif isinstance(value, str):
