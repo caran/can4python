@@ -136,6 +136,7 @@ class TestConfiguration(unittest.TestCase):
                           self.config.set_receive_on_change_only_from_signalnames, ["nonexistingsignal"])
         self.assertRaises(exceptions.CanException, self.config.set_receive_on_change_only_from_signalnames, "ABC")
         self.assertRaises(exceptions.CanException, self.config.set_receive_on_change_only_from_signalnames, 123)
+        
     def testGetDescriptiveAsciiArt(self):
         result = self.config.get_descriptive_ascii_art()
         print('\n\n' + result)  # Check the output manually

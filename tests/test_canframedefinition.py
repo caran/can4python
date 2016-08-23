@@ -134,6 +134,7 @@ class TestCanFrameDefinition(unittest.TestCase):
         self.assertRaises(exceptions.CanException, setattr, self.frame_def, 'frame_format', 1)
 
         self.assertRaises(exceptions.CanException, setattr, self.frame_def, 'producer_ids', 3)
+        self.assertRaises(exceptions.CanException, setattr, self.frame_def, 'producer_ids', "3")
 
     def testIsOutbound(self):
         self.assertTrue(self.frame_def.is_outbound(["9"]))
