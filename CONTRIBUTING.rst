@@ -10,6 +10,14 @@ You can contribute in many ways:
 Types of Contributions
 ----------------------
 
+Helping other users
+~~~~~~~~~~~~~~~~~~~
+
+If you successfully have used can4python, it highly appreciated if you
+help other users. This could for example be answering questions on Stack Overflow:
+
+`can4python on Stack Overflow <http://stackoverflow.com/search?q=can4python>`_
+
 Report Bugs
 ~~~~~~~~~~~
 

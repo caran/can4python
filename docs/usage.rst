@@ -211,6 +211,48 @@ Configurations made in source code using can4python can be written to a KCD file
     mycanbus.write_configuration('outputfile.kcd')
 
 
+Show the contents of a .KCD configuration file (possibly converted from a .DBC file)
+------------------------------------------------------------------------------------
+It is easy to print an overview of a configuration file::
+
+    import can4python
+    config = can4python.FilehandlerKcd.read("tests/testfile_input.kcd")
+    print(config.get_descriptive_ascii_art())
+
+It will print::
+
+    CAN configuration object. Busname 'Mainbus', having 2 frameIDs defined. Enacts these node IDs: 
+        Frame definitions:
+
+        CAN frame definition. ID=1 (0x001, standard) 'testframedef1', DLC=8, cycletime None ms, producers: ['17'], no throttling, contains 4 signals
+            Signal details:
+            ---------------
+        
+        
+            Signal 'testsignal11' Startbit 56, bits 1 (min DLC 8) little endian, unsigned, scalingfactor 1, unit: 
+                 valoffset 0.0 (range 0 to 1) min None, max None, default 0.0.
+        
+                 Startbit normal bit numbering, least significant bit: 56
+                 Startbit normal bit numbering, most significant bit: 56
+                 Startbit backward bit numbering, least significant bit: 0
+        
+                          111111   22221111 33222222 33333333 44444444 55555544 66665555
+                 76543210 54321098 32109876 10987654 98765432 76543210 54321098 32109876
+                 Byte0    Byte1    Byte2    Byte3    Byte4    Byte5    Byte6    Byte7
+                                                                                       L
+                 66665555 55555544 44444444 33333333 33222222 22221111 111111
+                 32109876 54321098 76543210 98765432 10987654 32109876 54321098 76543210
+        
+        
+            Signal 'testsignal12' Startbit 8, bits 16 (min DLC 3) little endian, unsigned, scalingfactor 1, unit: m/s
+                 valoffset 0.0 (range 0 to 7e+04) min 0.0, max 100.0, default 0.0.
+                 Test signal number 2 
+                 Startbit normal bit numbering, least significant bit: 8
+
+                 (truncated)
+             
+
+
 Show filtering of incoming frames
 ---------------------------------
 

@@ -32,6 +32,9 @@ Features
 * Filtering of incoming frames on data changes. This is done via a bit mask in the Linux kernel.
 * Periodic frame transmission executed by the Linux kernel (not by Python code).
 
+..
+
+* Useful for showing the contents of KCD files (also those converted from DBC files).
 
 Configuration file format
 -------------------------
@@ -83,3 +86,11 @@ Sphinx rtd theme      Theme for Sphinx                  MIT                     
 Installation and usage
 ----------------------
 See separate documentation pages.
+
+
+Support
+-------
+
+The preferred way is to open a question on `Stack Overflow <http://stackoverflow.com>`_ .
+
+Found a bug? Open an issue on Github!
