@@ -21,82 +21,67 @@ Each of the CAN frames contains a number of signals. In order to specify a signa
 
 For more details, see :class:`.CanSignalDefinition`.
 
-Minimal example
----------------
+
+Minimal examples
+----------------
 To use can4python in a project with the ``'vcan0'`` CAN interface, and reading the CAN signal definitions
-from a KCD file::
+from a KCD file:
 
-    import can4python as can
+.. literalinclude:: ../examples/documentation_example_send.py
 
-    bus = can.CanBus.from_kcd_file('documentation_example.kcd', 'vcan0', ego_node_ids=["1"])
-    bus.send_signals({'testsignal2': 3}) # Signal value = 3
-    received_signalvalues = bus.recv_next_signals()
+The sent CAN frame is viewed using the 'candump' command line utility (described in a later section)::
+
+    $ candump vcan0
+    vcan0  007   [8]  03 00 00 00 00 00 00 00
+
+As our script will send out frames from the node "1", it will consider frame ID 7
+(which holds testsignal2) as an outgoing frame. That is
+seen in the corresponding KCD file:
+
+.. literalinclude:: ../examples/documentation_example.kcd
+    :language: xml
+
+To receive CAN signals:
+
+.. literalinclude:: ../examples/documentation_example_receive.py
+
 
 The ``bus.recv_next_signals()`` will recive one CAN frame, and unpack its signals. The ``received_signalvalues`` is a
 dictionary with the signal values (*numerical*), having the signal names (*str*) as keys.
 If a timeout is defined and no frame is received, a :exc:`.CanTimeoutException` is raised.
 
-As our script will send out frames from the node "1", it will consider frame ID 7 as an outgoing frame. That is
-seen in the corresponding KCD file:
+Test it by sending a CAN frame using the 'cansend' command line utility::
 
-.. code-block:: xml
+    $ cansend vcan0 007#0F0000FF000000F1
 
-    <?xml version="1.0" ?>
-    <NetworkDefinition xmlns="http://kayak.2codeornot2code.org/1.0"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="Definition.xsd">
-      <Document/>
-      <Bus name="Mainbus">
-        <Message id="0x007" length="8" name="testmessage">
-          <Signal name="testsignal1" offset="56"/>
-          <Signal endianess="little" length="16" name="testsignal2" offset="0"/>
-          <Signal length="16" name="testsignal3" offset="24"/>
-          <Signal endianess="big" length="4" name="testsignal4" offset="59">
-            <Value type="signed"/>
-          </Signal>
-          <Producer>
-            <NodeRef id="1"/>
-          </Producer>
-        </Message>
-      </Bus>
-    </NetworkDefinition>
+The Python script will print::
 
+    {'testsignal1': 1.0, 'testsignal3': 255.0, 'testsignal2': 15.0, 'testsignal4': -2.0}
 
-Alternatively, you can also set the CAN frame definitions and CAN signal definitions in your source code,
-instead of in a KCD file::
+Alternatively, you can also set the CAN frame definitions and CAN signal definitions in your source code 
+(instead of in a KCD file):
 
-    import can4python as can
-
-    frame_def = can.CanFrameDefinition(7, name='testmessage')
-    frame_def.producer_ids = ["1"]
-    signal_def = can.CanSignalDefinition("testsignal2", 0, 16)
-    frame_def.signaldefinitions.append(signal_def)
-    config = can.Configuration({7: frame_def}, ego_node_ids=["1"])
-
-    bus = can.CanBus(config, 'vcan0')
-    bus.send_signals({'testsignal2': 3}) # Signal value = 3
+.. literalinclude:: ../examples/documentation_example_programmatic.py
 
 
 Broadcast Manager (BCM) usage example
 -------------------------------------
 The Broadcast Manager (BCM) can automatically do periodic CAN frame transmission, and it can filter incoming CAN frame
-on data changes. Periodic transmission is done like this::
+on data changes. Periodic transmission is done like this:
 
-    import time
-    import can4python as can
+.. literalinclude:: ../examples/documentation_example_bcm.py
 
-    frame_def = can.CanFrameDefinition(7, name='testmessage')
-    frame_def.producer_ids = ["1"]
-    frame_def.cycletime = 250  # milliseconds
-    signal_def = can.CanSignalDefinition("testsignal2", 0, 16)
-    frame_def.signaldefinitions.append(signal_def)
+The output resulting CAN frames are::
 
-    config = can.Configuration({7: frame_def}, ego_node_ids=["1"])
-
-    bus = can.CanBus(config, 'vcan0', use_bcm=True)
-    bus.send_signals({'testsignal2': 3}) # Signal value = 3. Start periodic transmission.
-    time.sleep(10)
-
+    $ candump vcan0
+    vcan0  007   [8]  05 00 00 00 00 00 00 00
+    vcan0  007   [8]  05 00 00 00 00 00 00 00
+    vcan0  007   [8]  05 00 00 00 00 00 00 00
+    vcan0  007   [8]  05 00 00 00 00 00 00 00
+    vcan0  007   [8]  05 00 00 00 00 00 00 00
+    vcan0  007   [8]  05 00 00 00 00 00 00 00
+    vcan0  007   [8]  05 00 00 00 00 00 00 00
+    (truncated)
 
 Usage recommendations
 ---------------------
@@ -117,75 +102,9 @@ To have an overview of the messages and signals on the bus::
 
     print(bus.get_descriptive_ascii_art())
 
-It will print something like::
+It will print something like:
 
-    CAN bus 'Mainbus' on CAN interface: vcan0, having 1 frameIDs defined. Protocol RAW
-        CAN configuration object. Busname 'Mainbus', having 1 frameIDs defined. Enacts these node IDs: 1
-        Frame definitions:
-
-        CAN frame definition. ID=7 (0x007, standard) testmessage, DLC=8, cycletime None ms, producers: 1, contains 4 signals
-            Signal details:
-            ---------------
-
-
-            Signal 'testsignal1' Startbit 56, bits 1 (min DLC 8) little endian, unsigned, scalingfactor 1, unit:
-                 valoffset 0.0 (range 0 to 1) min None, max None, default 0.0.
-
-                 Startbit normal bit numbering, least significant bit: 56
-                 Startbit normal bit numbering, most significant bit: 56
-                 Startbit backward bit numbering, least significant bit: 0
-
-                          111111   22221111 33222222 33333333 44444444 55555544 66665555
-                 76543210 54321098 32109876 10987654 98765432 76543210 54321098 32109876
-                 Byte0    Byte1    Byte2    Byte3    Byte4    Byte5    Byte6    Byte7
-                                                                                       L
-                 66665555 55555544 44444444 33333333 33222222 22221111 111111
-                 32109876 54321098 76543210 98765432 10987654 32109876 54321098 76543210
-
-
-            Signal 'testsignal2' Startbit 0, bits 16 (min DLC 2) little endian, unsigned, scalingfactor 1, unit:
-                 valoffset 0.0 (range 0 to 7e+04) min None, max None, default 0.0.
-
-                 Startbit normal bit numbering, least significant bit: 0
-                 Startbit normal bit numbering, most significant bit: 15
-                 Startbit backward bit numbering, least significant bit: 56
-
-                          111111   22221111 33222222 33333333 44444444 55555544 66665555
-                 76543210 54321098 32109876 10987654 98765432 76543210 54321098 32109876
-                 Byte0    Byte1    Byte2    Byte3    Byte4    Byte5    Byte6    Byte7
-                 XXXXXXXL MXXXXXXX
-                 66665555 55555544 44444444 33333333 33222222 22221111 111111
-                 32109876 54321098 76543210 98765432 10987654 32109876 54321098 76543210
-
-
-            Signal 'testsignal3' Startbit 24, bits 16 (min DLC 5) little endian, unsigned, scalingfactor 1, unit:
-                 valoffset 0.0 (range 0 to 7e+04) min None, max None, default 0.0.
-
-                 Startbit normal bit numbering, least significant bit: 24
-                 Startbit normal bit numbering, most significant bit: 39
-                 Startbit backward bit numbering, least significant bit: 32
-
-                          111111   22221111 33222222 33333333 44444444 55555544 66665555
-                 76543210 54321098 32109876 10987654 98765432 76543210 54321098 32109876
-                 Byte0    Byte1    Byte2    Byte3    Byte4    Byte5    Byte6    Byte7
-                                            XXXXXXXL MXXXXXXX
-                 66665555 55555544 44444444 33333333 33222222 22221111 111111
-                 32109876 54321098 76543210 98765432 10987654 32109876 54321098 76543210
-
-
-            Signal 'testsignal4' Startbit 59, bits 4 (min DLC 8) big endian, signed, scalingfactor 1, unit:
-                 valoffset 0.0 (range -8 to 7) min None, max None, default 0.0.
-
-                 Startbit normal bit numbering, least significant bit: 59
-                 Startbit normal bit numbering, most significant bit: 62
-                 Startbit backward bit numbering, least significant bit: 3
-
-                          111111   22221111 33222222 33333333 44444444 55555544 66665555
-                 76543210 54321098 32109876 10987654 98765432 76543210 54321098 32109876
-                 Byte0    Byte1    Byte2    Byte3    Byte4    Byte5    Byte6    Byte7
-                                                                                 MXXL
-                 66665555 55555544 44444444 33333333 33222222 22221111 111111
-                 32109876 54321098 76543210 98765432 10987654 32109876 54321098 76543210
+.. program-output:: python3 ../examples/show_config.py
 
 
 The numbers above "Byte0 Byte1 " etc are the bit numbers using the normal numbering scheme. The letters 'ML' indicate

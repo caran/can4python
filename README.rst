@@ -70,16 +70,16 @@ For tests, a virtual CAN interface ('vcan') must be installed. It is part of the
 
 Dependencies for testing and documentation:
 
-===================== ================================= ======================= ==============================
-Dependency            Description                       License                 Debian/pip package
-===================== ================================= ======================= ==============================
-vcan0                 Virtual CAN bus interface         Part of Linux kernel    
-coverage              Test coverage measurement         Apache 2.0              P: coverage
-texlive               Latex library (for PDF creation)  "Knuth"                 D: texlive-full
-Sphinx 1.3+           Documentation tool                BSD 2-cl                P: sphinx
-Sphinx rtd theme      Theme for Sphinx                  MIT                     P: sphinx_rtd_theme
-===================== ================================= ======================= ==============================
-
+=========================== ================================= ======================= ==============================
+Dependency                  Description                       License                 Debian/pip package
+=========================== ================================= ======================= ==============================
+vcan0                       Virtual CAN bus interface         Part of Linux kernel    
+coverage                    Test coverage measurement         Apache 2.0              P: coverage
+texlive                     Latex library (for PDF creation)  "Knuth"                 D: texlive-full
+Sphinx 1.3+                 Documentation tool                BSD 2-cl                P: sphinx
+Sphinx rtd theme            Theme for Sphinx                  MIT                     P: sphinx_rtd_theme
+sphinxcontrib.programoutput Capture program output for Sphinx BSD 2-cl                P: sphinxcontrib-programoutput
+=========================== ================================= ======================= ==============================
 
 
 

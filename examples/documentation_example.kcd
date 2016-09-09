@@ -6,9 +6,9 @@
   <Bus name="Mainbus">
     <Message id="0x007" length="8" name="testmessage">
       <Signal name="testsignal1" offset="56"/>
-      <Signal endianess="little" length="16" name="testsignal2" offset="0"/>
-      <Signal length="16" name="testsignal3" offset="24"/>
-      <Signal endianess="big" length="4" name="testsignal4" offset="59">
+      <Signal name="testsignal2" offset="0"  length="16" endianess="little"/>
+      <Signal name="testsignal3" offset="24" length="16" />
+      <Signal name="testsignal4" offset="59" length="4" endianess="big">
         <Value type="signed"/>
       </Signal>
       <Producer>
