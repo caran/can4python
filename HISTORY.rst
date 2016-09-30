@@ -5,7 +5,7 @@ History
 =======
 
 
-0.2.1 (2016-09-31)
+0.2.1 (2016-09-30)
 ---------------------
 
 * Adjust duocumentation build configuration to better fit readthedocs.io
