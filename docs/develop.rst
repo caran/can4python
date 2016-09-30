@@ -38,3 +38,44 @@ TODO
 * Handle Labels (Enums, name constants) in KCD files. For example: PowerMode='EngineRunning'
 * More usage examples, also with BCM.
 * Abstract BCM more from CanBus.
+
+
+Release procedure
+---------------------
+Development is done in the 'dev' git branch.
+
+To do a release:
+
+* Change version number in the version.py file
+* Update HISTORY.rst
+* Run tests
+* Verify that documentation builds for HTML and PDF works
+
+Commit to dev, and push to master::
+
+    git add HISTORY.rst 
+    git add can4python/version.py 
+    git commit -m "Version 0.2.0"
+    git pull origin dev
+    git push origin dev
+    git checkout master
+    git pull origin master
+    git checkout dev
+    git merge master
+    git checkout master
+    git merge dev
+    git push origin master
+
+Make a tag::
+
+    git tag -a 0.2.0 -m "Version 0.2.0"
+    git push origin --tags
+
+Upload to PyPI::
+
+    python3 setup.py register
+    python3 setup.py sdist bdist_wheel upload
+
+Update Readthedocs.io by clicking the "Build" button on the "Project Home" page.
+You need to build within a virtualenv on Readthedocs to have API documnentation working (adjust the project settings).
+Restrict Readthedocs.io to publish the "latest" branch of the documentation.
