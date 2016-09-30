@@ -102,9 +102,81 @@ To have an overview of the messages and signals on the bus::
 
     print(bus.get_descriptive_ascii_art())
 
-It will print something like:
 
-.. program-output:: python3 ../examples/show_config.py
+
+..
+  NOTE TO DOCUMENTATION MAINTAINER: RUN THIS TO HAVE THE OUTPUT:  python3 ../examples/show_config.py
+  IT WILL NOT WORK ON READTHEDOCS.IO WEBSITE (AS IT REQUIRES RUNNING CAN4PYTHON ON VCAN0)
+
+It will print something like::
+
+    CAN bus 'Mainbus' on CAN interface: vcan0, having 1 frameIDs defined. Protocol RAW
+        CAN configuration object. Busname 'Mainbus', having 1 frameIDs defined. Enacts these node IDs: 1
+        Frame definitions:
+
+        CAN frame definition. ID=7 (0x007, standard) 'testmessage', DLC=8, cycletime None ms, producers: ['1'], no throttling, contains 4 signals
+            Signal details:
+            ---------------
+        
+        
+            Signal 'testsignal1' Startbit 56, bits 1 (min DLC 8) little endian, unsigned, scalingfactor 1, unit: 
+                 valoffset 0.0 (range 0 to 1) min None, max None, default 0.0.
+        
+                 Startbit normal bit numbering, least significant bit: 56
+                 Startbit normal bit numbering, most significant bit: 56
+                 Startbit backward bit numbering, least significant bit: 0
+        
+                          111111   22221111 33222222 33333333 44444444 55555544 66665555
+                 76543210 54321098 32109876 10987654 98765432 76543210 54321098 32109876
+                 Byte0    Byte1    Byte2    Byte3    Byte4    Byte5    Byte6    Byte7
+                                                                                       L
+                 66665555 55555544 44444444 33333333 33222222 22221111 111111
+                 32109876 54321098 76543210 98765432 10987654 32109876 54321098 76543210
+        
+        
+            Signal 'testsignal2' Startbit 0, bits 16 (min DLC 2) little endian, unsigned, scalingfactor 1, unit: 
+                 valoffset 0.0 (range 0 to 7e+04) min None, max None, default 0.0.
+        
+                 Startbit normal bit numbering, least significant bit: 0
+                 Startbit normal bit numbering, most significant bit: 15
+                 Startbit backward bit numbering, least significant bit: 56
+        
+                          111111   22221111 33222222 33333333 44444444 55555544 66665555
+                 76543210 54321098 32109876 10987654 98765432 76543210 54321098 32109876
+                 Byte0    Byte1    Byte2    Byte3    Byte4    Byte5    Byte6    Byte7
+                 XXXXXXXL MXXXXXXX                                                      
+                 66665555 55555544 44444444 33333333 33222222 22221111 111111
+                 32109876 54321098 76543210 98765432 10987654 32109876 54321098 76543210
+        
+        
+            Signal 'testsignal3' Startbit 24, bits 16 (min DLC 5) little endian, unsigned, scalingfactor 1, unit: 
+                 valoffset 0.0 (range 0 to 7e+04) min None, max None, default 0.0.
+        
+                 Startbit normal bit numbering, least significant bit: 24
+                 Startbit normal bit numbering, most significant bit: 39
+                 Startbit backward bit numbering, least significant bit: 32
+        
+                          111111   22221111 33222222 33333333 44444444 55555544 66665555
+                 76543210 54321098 32109876 10987654 98765432 76543210 54321098 32109876
+                 Byte0    Byte1    Byte2    Byte3    Byte4    Byte5    Byte6    Byte7
+                                            XXXXXXXL MXXXXXXX                           
+                 66665555 55555544 44444444 33333333 33222222 22221111 111111
+                 32109876 54321098 76543210 98765432 10987654 32109876 54321098 76543210
+        
+        
+            Signal 'testsignal4' Startbit 59, bits 4 (min DLC 8) big endian, signed, scalingfactor 1, unit: 
+                 valoffset 0.0 (range -8 to 7) min None, max None, default 0.0.
+        
+                 Startbit normal bit numbering, least significant bit: 59
+                 Startbit normal bit numbering, most significant bit: 62
+                 Startbit backward bit numbering, least significant bit: 3
+        
+                          111111   22221111 33222222 33333333 44444444 55555544 66665555
+                 76543210 54321098 32109876 10987654 98765432 76543210 54321098 32109876
+                 Byte0    Byte1    Byte2    Byte3    Byte4    Byte5    Byte6    Byte7
+                                                                                 MXXL   
+                 66665555 55555544 44444444 33333333 33222222 22221111 111111
+                 32109876 54321098 76543210 98765432 10987654 32109876 54321098 76543210
 
 
 The numbers above "Byte0 Byte1 " etc are the bit numbers using the normal numbering scheme. The letters 'ML' indicate
