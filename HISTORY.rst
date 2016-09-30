@@ -4,7 +4,7 @@
 History
 =======
 
-0.2.0 (2016-?-?)
+0.2.0 (2016-09-30)
 ---------------------
 
 * Better support for other architectures. The broadcast manager (BCM) is
