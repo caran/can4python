@@ -68,6 +68,8 @@ coverage:
 	xdg-open htmlcov/index.html
 
 docs: clean-doc
+	rm -f docs/can4python.rst
+	rm -f docs/modules.rst
 	sphinx-apidoc -o docs/ can4python
 	$(MAKE) -C docs html
 	@echo "    "
