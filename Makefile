@@ -40,8 +40,6 @@ clean-test:
 	find . -name '*TEMPORARY.kcd' -exec rm -f {} +
 
 clean-doc:
-	rm -f docs/can4python.rst
-	rm -f docs/modules.rst
 	rm -fr docs/_build
 	-$(MAKE) -C docs clean
 	
