@@ -39,14 +39,14 @@ def enable_virtual_can_bus():
     except subprocess.CalledProcessError:
         pass
     try:
-        subprocess.check_output(["ifconfig", VIRTUAL_CAN_BUS_NAME, "up"])
+        subprocess.check_output(["ip", "link", "set", "up", VIRTUAL_CAN_BUS_NAME])
     except subprocess.CalledProcessError:
         raise exceptions.CanException("Could not enable {}. Are you sure you are running as sudo?".format(
             VIRTUAL_CAN_BUS_NAME))
 
 
 def disable_virtual_can_bus():
-    subprocess.check_output(["ifconfig", VIRTUAL_CAN_BUS_NAME, "down"])
+    subprocess.check_output(["ip", "link", "set", "down", VIRTUAL_CAN_BUS_NAME])
 
 
 class TestSocketCanRawInterface(unittest.TestCase):
@@ -89,15 +89,15 @@ class TestSocketCanRawInterface(unittest.TestCase):
         self.assertEqual(a.interfacename, VIRTUAL_CAN_BUS_NAME)
         a.close()
         self.assertEqual(a.interfacename, VIRTUAL_CAN_BUS_NAME)
-        
+
         b = caninterface_raw.SocketCanRawInterface(VIRTUAL_CAN_BUS_NAME, timeout=1.0)
         self.assertEqual(b.interfacename, VIRTUAL_CAN_BUS_NAME)
         b.close()
-        
+
         c = caninterface_raw.SocketCanRawInterface(VIRTUAL_CAN_BUS_NAME, timeout=1.0)
         self.assertEqual(c.interfacename, VIRTUAL_CAN_BUS_NAME)
         c.close()
-        
+
         d = caninterface_raw.SocketCanRawInterface(VIRTUAL_CAN_BUS_NAME, timeout=1.0)
         self.assertEqual(d.interfacename, VIRTUAL_CAN_BUS_NAME)
         d.close()
@@ -113,13 +113,13 @@ class TestSocketCanRawInterface(unittest.TestCase):
     def testConstructorSeveralInterfaces(self):
         a = caninterface_raw.SocketCanRawInterface(VIRTUAL_CAN_BUS_NAME, timeout=1.0)
         self.assertEqual(a.interfacename, VIRTUAL_CAN_BUS_NAME)
-        
+
         b = caninterface_raw.SocketCanRawInterface(VIRTUAL_CAN_BUS_NAME, timeout=1.0)
         self.assertEqual(b.interfacename, VIRTUAL_CAN_BUS_NAME)
-        
+
         c = caninterface_raw.SocketCanRawInterface(VIRTUAL_CAN_BUS_NAME, timeout=1.0)
         self.assertEqual(c.interfacename, VIRTUAL_CAN_BUS_NAME)
-        
+
         a.close()
         b.close()
         c.close()
@@ -202,11 +202,11 @@ class TestSocketCanRawInterface(unittest.TestCase):
         self.interface.set_receive_filters([])
         self.interface.set_receive_filters(list(range(200)))
 
-if __name__ == '__main__': 
-    
-        # Run all tests #
+if __name__ == '__main__':
+
+    # Run all tests #
     unittest.main()
-    
+
         # Run a single test #
     # suite = unittest.TestSuite()
     # suite.addTest(TestSocketCanInterfaceRaw("testConstructor"))
