@@ -26,7 +26,12 @@
           <NodeRef id="1"/>
           <NodeRef id="3"/>
       </Producer>
-      <Signal name="testsignal21" offset="5" />
+      <Signal name="testsignal21" offset="5">
+          <LabelSet>
+            <Label value="0" name="Disabled"/>
+            <Label value="1" name="Enabled"/>
+          </LabelSet>
+      </Signal>
     </Message>
   </Bus>
 </NetworkDefinition>
