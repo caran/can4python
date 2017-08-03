@@ -16,7 +16,7 @@ Web resources
 Features
 --------
 * Sends and receives CAN frames.
-* Handles parsing of CAN signals from CAN frames.
+* Handles parsing of CAN signals from CAN frames (can optionally match labels).
 
 ..
 
@@ -58,7 +58,7 @@ Known limitations
 -----------------
 * Not all CAN functionality is implemented. 'Error frames' and 'remote request frames' are not
   handled, and CAN multiplex signals are not supported.
-* Not all features of the KCD file format are implemented, for example 'Labels'.
+* Not all features of the KCD file format are implemented, for example 'LabelGroups'.
 * It is assumed that each CAN signal name only is available in a single CAN frame ID.
 
 

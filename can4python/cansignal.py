@@ -3,14 +3,14 @@
 # Author: Jonas Berg
 # Copyright (c) 2015, Semcon Sweden AB
 # All rights reserved.
-# 
-# Redistribution and use in source and binary forms, with or without modification, are permitted 
+#
+# Redistribution and use in source and binary forms, with or without modification, are permitted
 # provided that the following conditions are met:
 # 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the
 #    following disclaimer.
-# 2. Redistributions in binary form must reproduce the above copyright notice,  this list of conditions and 
+# 2. Redistributions in binary form must reproduce the above copyright notice,  this list of conditions and
 #    the following disclaimer in the documentation and/or other materials provided with the distribution.
-# 3. Neither the name of the Semcon Sweden AB nor the names of its contributors may be used to endorse or 
+# 3. Neither the name of the Semcon Sweden AB nor the names of its contributors may be used to endorse or
 #    promote products derived from this software without specific prior written permission.
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
@@ -23,7 +23,7 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-# 
+#
 
 from . import constants
 from . import utilities
@@ -32,11 +32,11 @@ from . import exceptions
 SYMBOL_LEAST_SIGNIFICANT_BIT = "L"
 SYMBOL_MOST_SIGNIFICANT_BIT = "M"
 SYMBOL_OTHER_VALID_BIT = "X"
-    
-    
+
+
 class CanSignalDefinition():
     """A class for describing a CAN signal definition (not the value of the signal).
-    
+
     Attributes:
       signalname (str): Signal name
       unit (str): Unit for the value. Defaults to ``''``.
@@ -66,9 +66,9 @@ class CanSignalDefinition():
       * In the first byte the least significant bit (rightmost, value 1) is named ``0``,
         and the most significant bit (leftmost, value 128) is named ``7``.
       * In next byte, the least significant bit is named ``8`` etc.
-    
+
     This results in this bit numbering for the CAN frame::
-    
+
         7,6,5,4,3,2,1,0  15,14,13,12,11,10,9,8  23,22,21,20,19,18,17,16  31,30,29,28,27,26,25,24 etc.
         Byte0            Byte1                  Byte2                    Byte3
 
@@ -100,7 +100,7 @@ class CanSignalDefinition():
     """
     def __init__(self, signalname, startbit, numberofbits, scalingfactor=1, valueoffset=0, defaultvalue=None,
                  unit="", comment="", minvalue=None, maxvalue=None,
-                 endianness=constants.LITTLE_ENDIAN, signaltype=constants.CAN_SIGNALTYPE_UNSIGNED):
+                 endianness=constants.LITTLE_ENDIAN, signaltype=constants.CAN_SIGNALTYPE_UNSIGNED, labels={}):
 
         # Properties #
         self.endianness = endianness
@@ -111,6 +111,7 @@ class CanSignalDefinition():
         self.valueoffset = valueoffset
         self.minvalue = minvalue
         self.maxvalue = maxvalue
+        self.labels = labels
 
         if defaultvalue is None:
             defaultvalue = valueoffset
@@ -286,9 +287,26 @@ class CanSignalDefinition():
                     value))
         self._numberofbits = value
 
+    @property
+    def labels(self):
+        """
+        *dict* Descriptive names for specific values.
+
+        """
+        return self._labels
+
+    @labels.setter
+    def labels(self, value):
+        try:
+            value = {int(k): v for k,v in value.items()}
+        except (ValueError, TypeError, AttributeError) as _:
+            raise exceptions.CanException("Labels must be assigned as a dictionary with numeric keys. Given: {}".format(value))
+
+        self._labels = value
+
     def __repr__(self):
         text = "Signal {!r} Startbit {}, bits {} (min DLC {}) {} endian, {}, scalingfactor {:1.2g}, unit: {}\n".format(
-            self.signalname, self.startbit, self.numberofbits, 
+            self.signalname, self.startbit, self.numberofbits,
             self.get_minimum_dlc(), self.endianness, self.signaltype, self.scalingfactor, self.unit)
         text += "         valoffset {:3.1f} (range {:1.1g} to {:1.1g}) min {}, max {}, default {:3.1f}.\n".format(
             self.valueoffset,
@@ -306,27 +324,30 @@ class CanSignalDefinition():
                 commentstring = "{} ...".format(self.comment[0:MAX_COMMENT_LENGTH].replace('\n', ' ').replace('\r', ''))
             text += "         {} ".format(commentstring)
         return text
-        
+
     def get_descriptive_ascii_art(self):
         """Create a visual indication how the signal is located in the frame_definition.
-       
+
         Returns:
           A multi-line string.
-        
+
         """
         tempstring, stopbit = self._get_overview_string()
-        
-        text = "    {!r}\n".format(self)
+
+        text = "    {!r}".format(self)
+        if len(self.labels) > 0:
+            text += "         Labels: {}\n".format(self.labels)
+        text += "\n"
         text += "         Startbit normal bit numbering, least significant bit: {}\n".format(self.startbit)
         text += "         Startbit normal bit numbering, most significant bit: {}\n".format(stopbit)
         text += "         Startbit backward bit numbering, least significant bit: {}\n\n".format(
             utilities.calculate_backward_bitnumber(self.startbit))
         text += utilities.generate_bit_byte_overview(tempstring, number_of_indent_spaces=9, show_reverse_bitnumbering=True)
         return text
- 
+
     def get_maximum_possible_value(self):
         """Get the largest value that technically could be sent with this signal.
-        
+
         The largest integer we can store is ``2**numberofbits - 1``.
         Also the :attr:`scalingfactor`, :attr:`valueoffset` and the :attr:`signaltype` affect the result.
 

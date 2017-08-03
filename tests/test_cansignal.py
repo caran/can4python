@@ -35,7 +35,8 @@ class TestCanSignal(unittest.TestCase):
         self.assertEqual(sig.minvalue, None)
         self.assertEqual(sig.maxvalue, None)
         self.assertEqual(sig.defaultvalue, 0)
-        
+        self.assertEqual(sig.labels, {})
+
         sig = cansignal.CanSignalDefinition('testsignal2', 7, 1, endianness='big')  # Most significant bit in first byte
         self.assertEqual(sig.signalname, 'testsignal2')
         self.assertEqual(sig.startbit, 7)
@@ -46,9 +47,10 @@ class TestCanSignal(unittest.TestCase):
         self.assertEqual(sig.signaltype, 'unsigned')
         self.assertEqual(sig.minvalue, None)
         self.assertEqual(sig.maxvalue, None)
-        self.assertEqual(sig.defaultvalue, 0)       
-        
-        sig = cansignal.CanSignalDefinition('testsignal3', 56, 1, defaultvalue=1)  # Least significant bit in last byte
+        self.assertEqual(sig.defaultvalue, 0)
+        self.assertEqual(sig.labels, {})
+
+        sig = cansignal.CanSignalDefinition('testsignal3', 56, 1, defaultvalue=1, labels={0: "on", '1': "off"})  # Least significant bit in last byte
         self.assertEqual(sig.signalname, 'testsignal3')
         self.assertEqual(sig.startbit, 56)
         self.assertEqual(sig.numberofbits, 1)
@@ -59,6 +61,7 @@ class TestCanSignal(unittest.TestCase):
         self.assertEqual(sig.minvalue, None)
         self.assertEqual(sig.maxvalue, None)
         self.assertEqual(sig.defaultvalue, 1)
+        self.assertEqual(sig.labels, {0: "on", 1: "off"})
 
     def testConstructorWrongValues(self):
         self.assertRaises(exceptions.CanException, cansignal.CanSignalDefinition, 'testsignal', 63, 1, scalingfactor=-1)
@@ -86,6 +89,11 @@ class TestCanSignal(unittest.TestCase):
         self.assertRaises(exceptions.CanException, cansignal.CanSignalDefinition,
                           'testsignal', 56, 1, endianness=None)
 
+        self.assertRaises(exceptions.CanException, cansignal.CanSignalDefinition,
+                          'testsignal', 56, 1, labels=[])
+        self.assertRaises(exceptions.CanException, cansignal.CanSignalDefinition,
+                          'testsignal', 56, 1, labels={1: "correct", "str": "wrong"})
+
     def testProperties(self):
         self.assertEqual(self.signal.signalname, 'testsignal')
         self.assertEqual(self.signal.startbit, 56)
@@ -96,6 +104,7 @@ class TestCanSignal(unittest.TestCase):
         self.assertEqual(self.signal.signaltype, constants.CAN_SIGNALTYPE_UNSIGNED)
         self.assertEqual(self.signal.maxvalue, None)
         self.assertEqual(self.signal.minvalue, None)
+        self.assertEqual(self.signal.labels, {})
 
         self.signal.signalname = 'testsignal2'
         self.signal.startbit = 55
@@ -109,6 +118,7 @@ class TestCanSignal(unittest.TestCase):
         self.signal.signaltype = constants.CAN_SIGNALTYPE_SIGNED
         self.signal.unit = 'm/s'
         self.signal.comment = "ABC"
+        self.signal.labels = {'3': "somename"}
 
         self.assertEqual(self.signal.signalname, 'testsignal2')
         self.assertEqual(self.signal.startbit, 55)
@@ -122,6 +132,7 @@ class TestCanSignal(unittest.TestCase):
         self.assertEqual(self.signal.signaltype, constants.CAN_SIGNALTYPE_SIGNED)
         self.assertEqual(self.signal.unit, 'm/s')
         self.assertEqual(self.signal.comment, "ABC")
+        self.assertEqual(self.signal.labels, {3: "somename"})
 
     def testPropertiesWrongValues(self):
         self.assertRaises(exceptions.CanException, setattr, self.signal, 'startbit', -1)
@@ -149,6 +160,8 @@ class TestCanSignal(unittest.TestCase):
         self.assertRaises(exceptions.CanException, setattr, self.signal, 'scalingfactor', None)
         self.assertRaises(exceptions.CanException, setattr, self.signal, 'valueoffset', 'ABC')
         self.assertRaises(exceptions.CanException, setattr, self.signal, 'valueoffset', None)
+        self.assertRaises(exceptions.CanException, setattr, self.signal, 'labels', [])
+        self.assertRaises(exceptions.CanException, setattr, self.signal, 'labels', {"str": 3})
 
         sig = cansignal.CanSignalDefinition('testsignal', 56, 1, endianness='big')
         sig.signaltype = constants.CAN_SIGNALTYPE_SINGLE
@@ -171,7 +184,7 @@ class TestCanSignal(unittest.TestCase):
         sig = cansignal.CanSignalDefinition('testsignalA', 56, 1)
         print(sig.get_descriptive_ascii_art())
 
-        sig = cansignal.CanSignalDefinition('testsignalB', 54, 4)
+        sig = cansignal.CanSignalDefinition('testsignalB', 54, 4, labels={0: "disabled"})
         print(sig.get_descriptive_ascii_art())
 
         sig = cansignal.CanSignalDefinition('testsignalC', 54, 2, endianness='big')

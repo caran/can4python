@@ -3,14 +3,14 @@
 # Author: Jonas Berg
 # Copyright (c) 2015, Semcon Sweden AB
 # All rights reserved.
-# 
-# Redistribution and use in source and binary forms, with or without modification, are permitted 
+#
+# Redistribution and use in source and binary forms, with or without modification, are permitted
 # provided that the following conditions are met:
 # 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the
 #    following disclaimer.
-# 2. Redistributions in binary form must reproduce the above copyright notice,  this list of conditions and 
+# 2. Redistributions in binary form must reproduce the above copyright notice,  this list of conditions and
 #    the following disclaimer in the documentation and/or other materials provided with the distribution.
-# 3. Neither the name of the Semcon Sweden AB nor the names of its contributors may be used to endorse or 
+# 3. Neither the name of the Semcon Sweden AB nor the names of its contributors may be used to endorse or
 #    promote products derived from this software without specific prior written permission.
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
@@ -23,7 +23,7 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-# 
+#
 
 import logging
 
@@ -156,7 +156,7 @@ class CanBus():
             frame_id_list = [x.frame_id for x in self._input_framedefinition_storage]
             self.caninterface.set_receive_filters(frame_id_list)
 
-    def recv_next_signals(self):
+    def recv_next_signals(self, match_labels=False):
         """Receive one CAN frame, and unpack it to signal values.
 
         Returns:
@@ -170,7 +170,7 @@ class CanBus():
 
         """
         frame = self.caninterface.recv_next_frame()
-        return frame.unpack(self._configuration.framedefinitions)
+        return frame.unpack(self._configuration.framedefinitions, match_labels=match_labels)
 
     def recv_next_frame(self):
         """Receive one CAN frame. Returns a :class:`.CanFrame` object.
@@ -195,7 +195,7 @@ class CanBus():
 
     def send_signals(self, *args, **kwargs):
         """Send CAN signals in frames.
-        
+
         Args:
          signals_to_send (dict): The signal values to send_frame. The keys are the signalnames (*str*),
            and the items are the values (*numerical* or *None*). If the value is *None* the default value is used.
@@ -209,7 +209,7 @@ class CanBus():
 
         Raises:
           CanException: When failing to set signal value etc. See :exc:`.CanException`.
-        
+
         """
         if args:
             if isinstance(args[0], dict):
@@ -296,15 +296,15 @@ class CanBus():
 
     def get_descriptive_ascii_art(self):
         """Display an overview of the :class:`.CanBus` object with frame definitions and signal definitions.
-        
+
         Returns:
           A multi-line string.
 
         """
         text = repr(self) + "\n"
         text += "    " + self._configuration.get_descriptive_ascii_art()
-        return text   
-                
+        return text
+
     def write_configuration(self, filename):
         """Write configuration to file.
 

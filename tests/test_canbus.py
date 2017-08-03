@@ -384,6 +384,15 @@ class TestCanBus(unittest.TestCase):
                                                       shell=False, stderr=subprocess.STDOUT)
         result = self.canbus_raw.recv_next_signals()
         self.assertEqual(len(result), 4)
+        self.assertEqual(result['testsignal11'], 0)
+
+        # with label matching
+        time.sleep(0.1)
+        self.simulated_can_process = subprocess.Popen(["cansend", VIRTUAL_CAN_BUS_NAME, canstring],
+                                                      shell=False, stderr=subprocess.STDOUT)
+        result = self.canbus_raw.recv_next_signals(match_labels=True)
+        self.assertEqual(len(result), 4)
+        self.assertEqual(result['testsignal11'], (0, "no"))
 
     def testReceiveBcmAndStop(self):
         self.canbus_bcm.init_reception()

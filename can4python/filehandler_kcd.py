@@ -131,6 +131,9 @@ class FilehandlerKcd():
                 unit = ""
                 minvalue = maxvalue = None
                 signaltype = constants.CAN_SIGNALTYPE_UNSIGNED
+
+                labels = {}
+
                 for val in signal.findall('kayak:Value', constants.KCD_XML_NAMESPACE):
                     scalingfactor = float(val.get('slope', 1))
                     valueoffset = float(val.get('intercept', 0))
@@ -150,10 +153,14 @@ class FilehandlerKcd():
                     if notes.text is not None:
                         signalcomment += notes.text
 
+                for labelset in signal.findall('kayak:LabelSet', constants.KCD_XML_NAMESPACE):
+                    for label in labelset.findall('kayak:Label', constants.KCD_XML_NAMESPACE):
+                        labels[label.get('value')] = label.get('name')
+
                 s = cansignal.CanSignalDefinition(signalname, startbit, numberofbits, scalingfactor, valueoffset,
                                                   unit=unit, comment=signalcomment,
                                                   minvalue=minvalue, maxvalue=maxvalue,
-                                                  endianness=endianness, signaltype=signaltype)
+                                                  endianness=endianness, signaltype=signaltype, labels=labels)
 
                 f.signaldefinitions.append(s)
             config.framedefinitions[f.frame_id] = f
@@ -223,6 +230,12 @@ class FilehandlerKcd():
 
                 if len(valueattributes):
                     ElementTree.SubElement(s_subtree, "Value", attrib=valueattributes)
+
+                if len(s.labels):
+                    labelset_subtree = ElementTree.SubElement(s_subtree, "LabelSet")
+                    for k, v in s.labels.items():
+                        ElementTree.SubElement(labelset_subtree, "Label", attrib={"value": str(k),
+                                                                                  "name": v})
 
             # Producers
             if f.producer_ids:
