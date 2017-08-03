@@ -231,6 +231,12 @@ class FilehandlerKcd():
                 if len(valueattributes):
                     ElementTree.SubElement(s_subtree, "Value", attrib=valueattributes)
 
+                if len(s.labels):
+                    labelset_subtree = ElementTree.SubElement(s_subtree, "LabelSet")
+                    for k, v in s.labels.items():
+                        ElementTree.SubElement(labelset_subtree, "Label", attrib={"value": str(k),
+                                                                                  "name": v})
+
             # Producers
             if f.producer_ids:
                 p_subtree = ElementTree.SubElement(m_subtree, "Producer")

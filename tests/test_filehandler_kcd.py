@@ -165,6 +165,10 @@ class TestConfiguration(unittest.TestCase):
         filehandler_kcd.FilehandlerKcd.write(config, self.OUTPUT_FILENAME_2)
         self.assertTrue(os.path.exists(self.OUTPUT_FILENAME_2))
 
+        # Read rewritten file
+        config2 = filehandler_kcd.FilehandlerKcd.read(self.OUTPUT_FILENAME_2, None)
+        self.assertEqual(config.get_descriptive_ascii_art(), config2.get_descriptive_ascii_art())
+
         # TODO: Check manually that the input and output files are similar
 
     def testWriteKcdFileNoBusnameGiven(self):
