@@ -20,11 +20,13 @@ from can4python import canframe
 
 
 class TestCanFrame(unittest.TestCase):
-
     def setUp(self):
         self.frame = canframe.CanFrame(1, b'\x00\x02\x00\x08\x00\x00\x00\xff')
 
         self.testsig1 = cansignal.CanSignalDefinition('testsignal1', 56, 1)  # Least significant bit in last byte
+        self.testsig1_with_one_label = cansignal.CanSignalDefinition('testsignal1', 56, 1, labels={0: "off"})
+        self.testsig1_with_labels = cansignal.CanSignalDefinition('testsignal1', 56, 1, labels={0: "off", "1": "on"})
+
         self.testsig2 = cansignal.CanSignalDefinition('testsignal2', 8, 16, endianness='big')  # Two leftmost bytes
         self.testsig3 = cansignal.CanSignalDefinition('testsignal3', 24, 16, endianness='little',
                                                       maxvalue=1200)  # Two center bytes
@@ -46,20 +48,20 @@ class TestCanFrame(unittest.TestCase):
         self.assertEqual(frame2.frame_id, 0x1FFFFFFF)
         self.assertEqual(frame2.frame_data, b'\x02\x03')
         self.assertEqual(frame2.frame_format, 'extended')
-        
-    def testConstructorNamedArguments(self):   
+
+    def testConstructorNamedArguments(self):
         frame = canframe.CanFrame(frame_id=3, frame_data=b'\x04', frame_format='extended')
         self.assertEqual(frame.frame_id, 3)
         self.assertEqual(frame.frame_data, b'\x04')
         self.assertEqual(frame.frame_format, 'extended')
-  
-    def testConstructorFromEmptyBytes(self):       
+
+    def testConstructorFromEmptyBytes(self):
         frame = canframe.CanFrame.from_empty_bytes(5, 6, 'extended')
         self.assertEqual(frame.frame_id, 5)
         self.assertEqual(frame.frame_data, b'\x00\x00\x00\x00\x00\x00')
         self.assertEqual(frame.frame_format, 'extended')
-        
-    def testConstructorFromRawframes(self):       
+
+    def testConstructorFromRawframes(self):
         frame1 = canframe.CanFrame.from_rawframe(b'\x07\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00')
         self.assertEqual(frame1.frame_id, 7)
         self.assertEqual(frame1.frame_format, 'standard')
@@ -146,7 +148,7 @@ class TestCanFrame(unittest.TestCase):
         self.assertRaises(exceptions.CanException, setattr, self.frame, 'frame_data', "7")
         self.assertRaises(exceptions.CanException, setattr, self.frame, 'frame_data', "\x01")
 
-    def testSignalvalueSet(self):       
+    def testSignalvalueSet(self):
         self.frame.set_signalvalue(self.testsig1)
         self.frame.set_signalvalue(self.testsig1, 0)
         self.frame.set_signalvalue(self.testsig1, 1)
@@ -157,7 +159,7 @@ class TestCanFrame(unittest.TestCase):
         self.frame.set_signalvalue(self.testsig3, 1000)
         self.frame.set_signalvalue(self.testsig3, 0)
         self.assertEqual(self.frame.frame_data, b'\x00\x00\x00\x00\x00\x00\x00\xfe')
-        
+
         self.frame.set_signalvalue(self.testsig1, 1)
         self.frame.set_signalvalue(self.testsig2, 16)
         self.frame.set_signalvalue(self.testsig3, 512)
@@ -250,7 +252,6 @@ class TestCanFrame(unittest.TestCase):
         self.frame.frame_data = b'\00'
         self.assertRaises(exceptions.CanException, self.frame.set_signalvalue, self.testsig1)
 
-
     def testSignalvalueGetSetMin(self):
         self.testsig3.minvalue = 0
         self.frame.set_signalvalue(self.testsig3, 0)
@@ -303,6 +304,32 @@ class TestCanFrame(unittest.TestCase):
         self.assertEqual(result['testsignal3'], 8)
         self.assertEqual(result['testsignal4'], 0)
 
+    def testUnpackOneLabel(self):
+        # label only for one possible value
+        frame_def = self.frame_def
+        frame_def.signaldefinitions.remove(self.testsig1)
+        frame_def.signaldefinitions.append(self.testsig1_with_one_label)
+
+        result = self.frame.unpack({self.frame_def.frame_id: frame_def}, match_labels=True)
+        self.assertEqual(len(result), 4)
+        self.assertEqual(result['testsignal1'], (1, ""))
+        self.assertEqual(result['testsignal2'], 2)
+        self.assertEqual(result['testsignal3'], 8)
+        self.assertEqual(result['testsignal4'], 0)
+
+    def testUnpackTwoLabels(self):
+        # labels for all two possible values
+        frame_def = self.frame_def
+        frame_def.signaldefinitions.remove(self.testsig1)
+        frame_def.signaldefinitions.append(self.testsig1_with_labels)
+
+        result = self.frame.unpack({self.frame_def.frame_id: frame_def}, match_labels=True)
+        self.assertEqual(len(result), 4)
+        self.assertEqual(result['testsignal1'], (1, "on"))
+        self.assertEqual(result['testsignal2'], 2)
+        self.assertEqual(result['testsignal3'], 8)
+        self.assertEqual(result['testsignal4'], 0)
+
     def testUnpackWrongFrameId(self):
         self.frame.frame_id = 2
         frame_defs = {self.frame_def.frame_id: self.frame_def}
@@ -326,15 +353,13 @@ class TestCanFrame(unittest.TestCase):
     def testGetDescriptiveAsciiArt(self):
         result = self.frame.get_descriptive_ascii_art()
         print('\n\n' + result)  # Check the output manually
-        
+
 
 if __name__ == '__main__':
-        
-        # Run all tests #
+    # Run all tests #
     unittest.main()
-    
-        # Run a single test #
+
+    # Run a single test #
     # suite = unittest.TestSuite()
     # suite.addTest(TestCanFrame("testGetDescriptiveAsciiArt"))
     # unittest.TextTestRunner(verbosity=2).run(suite)
-

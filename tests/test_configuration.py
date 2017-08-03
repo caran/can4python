@@ -34,7 +34,8 @@ fr_def1.signaldefinitions.append(testsig1)
 fr_def1.signaldefinitions.append(testsig2)
 fr_def1.signaldefinitions.append(testsig3)
 fr_def1.signaldefinitions.append(testsig4)
-testsig11 = cansignal.CanSignalDefinition('testsignal11', 56, 1)  # Least significant bit in last byte
+testsig11 = cansignal.CanSignalDefinition('testsignal11', 56, 1,
+                                          labels={0: "no", 1: "yes"})  # Least significant bit in last byte
 testsig12 = cansignal.CanSignalDefinition('testsignal12', 8, 16, endianness='big')  # Two leftmost bytes
 testsig13 = cansignal.CanSignalDefinition('testsignal13', 24, 16, endianness='little')  # Two center bytes
 testsig14 = cansignal.CanSignalDefinition('testsignal14', 59, 4, endianness='big', signaltype='signed')
@@ -49,10 +50,10 @@ TESTCONFIG1 = configuration.Configuration()
 TESTCONFIG1.add_framedefinition(fr_def1)
 TESTCONFIG1.add_framedefinition(fr_def2)
 TESTCONFIG1.busname = "bus1"
-TESTCONFIG1.ego_node_ids = ["1", "33", "45A", "A",]
+TESTCONFIG1.ego_node_ids = ["1", "33", "45A", "A", ]
+
 
 class TestConfiguration(unittest.TestCase):
-
     def setUp(self):
         self.config = copy.deepcopy(TESTCONFIG1)
 
@@ -73,7 +74,7 @@ class TestConfiguration(unittest.TestCase):
         fr_def = canframe_definition.CanFrameDefinition(1, 'testframedef')
         sig1 = cansignal.CanSignalDefinition('testsignal', 56, 1)  # Least significant bit in last byte
         fr_def.signaldefinitions.append(sig1)
-        config = configuration.Configuration({1:fr_def}, "DEF")
+        config = configuration.Configuration({1: fr_def}, "DEF")
         self.assertEqual(config.framedefinitions[1], fr_def)
         self.assertEqual(config.busname, "DEF")
 
@@ -136,7 +137,7 @@ class TestConfiguration(unittest.TestCase):
                           self.config.set_receive_on_change_only_from_signalnames, ["nonexistingsignal"])
         self.assertRaises(exceptions.CanException, self.config.set_receive_on_change_only_from_signalnames, "ABC")
         self.assertRaises(exceptions.CanException, self.config.set_receive_on_change_only_from_signalnames, 123)
-        
+
     def testGetDescriptiveAsciiArt(self):
         result = self.config.get_descriptive_ascii_art()
         print('\n\n' + result)  # Check the output manually
@@ -147,6 +148,7 @@ class TestConfiguration(unittest.TestCase):
         config.add_framedefinition(fr_def)
         self.assertEqual(config.framedefinitions[1], fr_def)
         self.assertEqual(config.busname, None)
+
 
 if __name__ == '__main__':
     unittest.main()

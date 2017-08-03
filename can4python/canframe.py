@@ -3,14 +3,14 @@
 # Author: Jonas Berg
 # Copyright (c) 2015, Semcon Sweden AB
 # All rights reserved.
-# 
-# Redistribution and use in source and binary forms, with or without modification, are permitted 
+#
+# Redistribution and use in source and binary forms, with or without modification, are permitted
 # provided that the following conditions are met:
 # 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the
 #    following disclaimer.
-# 2. Redistributions in binary form must reproduce the above copyright notice,  this list of conditions and 
+# 2. Redistributions in binary form must reproduce the above copyright notice,  this list of conditions and
 #    the following disclaimer in the documentation and/or other materials provided with the distribution.
-# 3. Neither the name of the Semcon Sweden AB nor the names of its contributors may be used to endorse or 
+# 3. Neither the name of the Semcon Sweden AB nor the names of its contributors may be used to endorse or
 #    promote products derived from this software without specific prior written permission.
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
@@ -23,7 +23,7 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-# 
+#
 
 import struct
 
@@ -193,11 +193,11 @@ class CanFrame():
     def set_signalvalue(self, signaldefinition, physical_value=None):
         """
         Set a signal physical_value in the frame.
-                
+
         Args:
           signaldefinition (:class:`.CanSignalDefinition` object): The definition of the signal
           physical_value (numerical): The physical_value (numerical) of the signal.
-         
+
          If the physical_value not is given, the default physical_value for the *signaldefinition* is used.
 
         Raises:
@@ -269,18 +269,24 @@ class CanFrame():
 
         self.frame_data = utilities.int_to_can_bytes(dlc, dataint)
 
-    def unpack(self, frame_definitions):
+    def unpack(self, frame_definitions, match_labels=False):
         """Unpack the CAN frame, and return all signal values.
-        
+
         Args:
           frame_definitions (dict): The keys are frame_id (int) and
             the items are :class:`.CanFrameDefinition` objects.
+          match_labels (bool): Whether labels in the :class:`.CanSignalDefinition`
+            should be matched to the signal values.
 
         Raises:
           CanException: For wrong DLC. See :exc:`.CanException`.
 
         Returns:
-          A dictionary of signal values. The keys are the signalname (str) and the items are the values (numerical).
+          A dictionary of signal values. The keys are the signalname (str) and the items are the values (numerical),
+            or - if match_labels is True and there is at least one label in the signal definion -
+            tuples of (value, label).
+            If there is a label for at least one value, but none for the current value, an empty string will be written
+            as label.
 
         If the frame not is described in the 'frame_definitions', an empty dictionary is returned.
         """
@@ -288,16 +294,22 @@ class CanFrame():
             fr_def = frame_definitions[self.frame_id]
         except KeyError:
             return {}
-       
+
         if len(self.frame_data) != fr_def.dlc:
             raise exceptions.CanException('The received frame has wrong length: {}, Def: {}'.format(self, fr_def))
-        
+
         outputdict = {}
         for sigdef in fr_def.signaldefinitions:
             val = self.get_signalvalue(sigdef)
-            outputdict[sigdef.signalname] = val
+            if match_labels and sigdef.labels:
+                try:
+                    outputdict[sigdef.signalname] = (val, sigdef.labels[val])
+                except KeyError:
+                    outputdict[sigdef.signalname] = (val, "")
+            else:
+                outputdict[sigdef.signalname] = val
         return outputdict
-        
+
     def get_rawframe(self):
         """Returns a 16 bytes long 'bytes' object."""
         dlc = len(self.frame_data)
